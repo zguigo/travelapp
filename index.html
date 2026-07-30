@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tom & Guigo — Itália, Outubro 2026</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ SVG SPRITE (ícones inline, sem dependências externas) ============ -->
+<svg style="display:none">
+  <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M8 3v4M16 3v4M3 10h18"/></symbol>
+  <symbol id="icon-list" viewBox="0 0 24 24"><circle cx="4.5" cy="6" r="1.3"/><circle cx="4.5" cy="12" r="1.3"/><circle cx="4.5" cy="18" r="1.3"/><path d="M9 6h11M9 12h11M9 18h11"/></symbol>
+  <symbol id="icon-wallet" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="13" rx="3"/><path d="M2.5 10h19"/><circle cx="17" cy="14.2" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.9 7.9 0 0 0 0-3l2-1.5-2-3.4-2.4.7a7.9 7.9 0 0 0-2.6-1.5L14 2h-4l-.4 2.3a7.9 7.9 0 0 0-2.6 1.5l-2.4-.7-2 3.4 2 1.5a7.9 7.9 0 0 0 0 3l-2 1.5 2 3.4 2.4-.7a7.9 7.9 0 0 0 2.6 1.5L10 22h4l.4-2.3a7.9 7.9 0 0 0 2.6-1.5l2.4.7 2-3.4-2-1.5Z"/></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="icon-train" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="5"/><path d="M5 13h14M8 17l-2.5 4M16 17l2.5 4"/><circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-plane" viewBox="0 0 24 24"><path d="M10.5 3.5 12 2l1.5 1.5v6.2l6.8 4v2l-6.8-2.1v4.6L16 20v1.6l-4-1.2-4 1.2V20l2.5-1.8v-4.6L3.7 15.7v-2l6.8-4V3.5Z"/></symbol>
+  <symbol id="icon-museum" viewBox="0 0 24 24"><path d="M3 10 12 4l9 6M4.5 10v9M8.5 10v9M15.5 10v9M19.5 10v9M2.5 19h19"/></symbol>
+  <symbol id="icon-attraction" viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M4.2 6.2l2.1 2.1M17.7 15.7l2.1 2.1M3 12h3M18 12h3M4.2 17.8l2.1-2.1M17.7 8.3l2.1-2.1"/><circle cx="12" cy="12" r="4"/></symbol>
+  <symbol id="icon-car" viewBox="0 0 24 24"><path d="M4 16v-3.5L6 8h12l2 4.5V16"/><path d="M4 16h16v2.5a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1V17H7.5v1.5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V16Z"/><circle cx="7.5" cy="16" r="1.2" fill="currentColor" stroke="none"/><circle cx="16.5" cy="16" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-other" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3a2.6 2.6 0 1 1 3.6 2.4c-1 .5-1.3 1-1.3 2"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="icon-hotel" viewBox="0 0 24 24"><path d="M3 21V6.5L11 3l8 3.5V21M3 21h18M7 21v-6h4v6M14 12h3v3h-3z"/></symbol>
+  <symbol id="icon-map" viewBox="0 0 24 24"><path d="m9 5-6 2v13l6-2 6 2 6-2V5l-6 2-6-2Z"/><path d="M9 5v13M15 7v13"/></symbol>
+  <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 8h3.2L9 5.5h6L16.8 8H20a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="14" r="3.6"/></symbol>
+  <symbol id="icon-both" viewBox="0 0 24 24"><circle cx="9" cy="9" r="4"/><circle cx="15" cy="9" r="4"/></symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4.5h6V7M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></symbol>
+  <symbol id="icon-export" viewBox="0 0 24 24"><path d="M12 3v11M8 10l4 4 4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+  <symbol id="icon-import" viewBox="0 0 24 24"><path d="M12 14V3M8 7l4-4 4 4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
+  <symbol id="icon-link" viewBox="0 0 24 24"><path d="M9.5 14.5 14.5 9.5M8 16l-2.5 2.5a3 3 0 0 1-4.2-4.2L4 11.5M16 8l2.5-2.5a3 3 0 0 1 4.2 4.2L20 12.5"/></symbol>
+  <symbol id="icon-food" viewBox="0 0 24 24"><path d="M6 2v8a2 2 0 0 0 4 0V2M6 2v20M10 2v6M17 2c-2 1-2.5 3-2.5 5.5S16 12 16 12v10"/></symbol>
+</svg>
+
+<div class="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark">TG</span>
+      <div class="brand-text">
+        <h1>Itália &amp; Europa</h1>
+        <p id="header-subtitle">Outubro de 2026 · Tom &amp; Guigo</p>
+      </div>
+    </div>
+    <button class="icon-btn" id="btn-settings" aria-label="Configurações e exportação">
+      <svg><use href="#icon-settings"/></svg>
+    </button>
+  </header>
+
+  <!-- ============ MAIN VIEWS ============ -->
+  <main class="app-main">
+
+    <!-- ----- Calendário (grid) ----- -->
+    <section class="view" id="view-calendar" data-view="calendar">
+      <div class="view-toolbar">
+        <h2>Outubro 2026</h2>
+        <span class="hint">Arraste os cartões para reorganizar o roteiro</span>
+      </div>
+      <div class="weekday-row" id="weekday-row"></div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+    </section>
+
+    <!-- ----- Lista (itinerário linear) ----- -->
+    <section class="view" id="view-list" data-view="list" hidden>
+      <div class="view-toolbar">
+        <h2>Itinerário</h2>
+        <span class="hint">Visão em lista, dia a dia</span>
+      </div>
+      <div class="day-list" id="day-list"></div>
+    </section>
+
+    <!-- ----- Resumo financeiro ----- -->
+    <section class="view" id="view-summary" data-view="summary" hidden>
+      <div class="view-toolbar">
+        <h2>Resumo financeiro</h2>
+        <span class="hint">Divisão de custos da viagem</span>
+      </div>
+
+      <div class="summary-cards">
+        <div class="summary-card">
+          <span class="summary-label">Total da viagem</span>
+          <span class="summary-value" id="sum-total">€ 0,00</span>
+        </div>
+        <div class="summary-card accent-sage">
+          <span class="summary-label">Pago por Tom</span>
+          <span class="summary-value" id="sum-tom">€ 0,00</span>
+        </div>
+        <div class="summary-card accent-terracotta">
+          <span class="summary-label">Pago por Guigo</span>
+          <span class="summary-value" id="sum-guigo">€ 0,00</span>
+        </div>
+      </div>
+
+      <div class="balance-card" id="balance-card">
+        <svg><use href="#icon-wallet"/></svg>
+        <p id="balance-text">Sem despesas registradas ainda.</p>
+      </div>
+
+      <h3 class="section-subtitle">Todos os lançamentos</h3>
+      <div class="ledger" id="ledger-list"></div>
+    </section>
+
+  </main>
+
+  <!-- ============ BOTTOM NAVIGATION (mobile) ============ -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-btn is-active" data-view="calendar" aria-label="Calendário">
+      <svg><use href="#icon-calendar"/></svg><span>Calendário</span>
+    </button>
+    <button class="nav-btn" data-view="list" aria-label="Lista">
+      <svg><use href="#icon-list"/></svg><span>Lista</span>
+    </button>
+    <button class="nav-btn" data-view="summary" aria-label="Resumo">
+      <svg><use href="#icon-wallet"/></svg><span>Resumo</span>
+    </button>
+    <button class="nav-btn" data-nav-settings aria-label="Configurações">
+      <svg><use href="#icon-settings"/></svg><span>Config</span>
+    </button>
+  </nav>
+
+  <!-- ============ MODAL: DETALHES DO DIA ============ -->
+  <div class="modal-overlay" id="day-modal-overlay" hidden>
+    <div class="day-modal" id="day-modal" role="dialog" aria-modal="true" aria-labelledby="day-modal-title">
+
+      <div class="day-modal-header">
+        <div>
+          <p class="day-modal-date" id="day-modal-date">1 de outubro</p>
+          <input type="text" id="day-city-input" class="city-input" placeholder="Cidade / destino">
+        </div>
+        <button class="icon-btn" id="btn-close-modal" aria-label="Fechar"><svg><use href="#icon-close"/></svg></button>
+      </div>
+
+      <div class="day-modal-body">
+
+        <!-- Presença -->
+        <div class="field-block">
+          <label class="field-label">Quem está nessa cidade</label>
+          <div class="presence-selector" id="presence-selector">
+            <button type="button" class="presence-opt" data-presence="tom">
+              <span class="avatar avatar-tom">T</span> Tom
+            </button>
+            <button type="button" class="presence-opt" data-presence="guigo">
+              <span class="avatar avatar-guigo">G</span> Guigo
+            </button>
+            <button type="button" class="presence-opt" data-presence="both">
+              <span class="avatar avatar-both"><svg><use href="#icon-both"/></svg></span> Ambos
+            </button>
+          </div>
+        </div>
+
+        <!-- Hospedagem -->
+        <div class="field-block">
+          <label class="field-label"><svg class="label-icon"><use href="#icon-hotel"/></svg> Hospedagem</label>
+          <div class="card-soft">
+            <input type="text" id="hotel-name" class="text-input" placeholder="Nome da acomodação">
+            <input type="text" id="hotel-address" class="text-input" placeholder="Endereço">
+            <input type="url" id="hotel-link" class="text-input" placeholder="Link (Booking / Airbnb)">
+          </div>
+        </div>
+
+        <!-- Tickets -->
+        <div class="field-block">
+          <div class="field-label-row">
+            <label class="field-label"><svg class="label-icon"><use href="#icon-wallet"/></svg> Tickets &amp; Passagens</label>
+            <button class="btn-small" id="btn-add-ticket"><svg><use href="#icon-plus"/></svg> Adicionar</button>
+          </div>
+          <div id="ticket-wallet" class="ticket-wallet"></div>
+        </div>
+
+        <!-- Restaurantes e pontos de interesse -->
+        <div class="field-block">
+          <div class="field-label-row">
+            <label class="field-label"><svg class="label-icon"><use href="#icon-food"/></svg> Restaurantes &amp; Pontos de Interesse</label>
+            <button class="btn-small" id="btn-add-place"><svg><use href="#icon-plus"/></svg> Adicionar</button>
+          </div>
+          <div id="place-list" class="place-list"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: NOVO TICKET ============ -->
+  <div class="modal-overlay" id="ticket-modal-overlay" hidden>
+    <div class="mini-modal">
+      <div class="mini-modal-header">
+        <h3>Novo ticket</h3>
+        <button class="icon-btn" id="btn-close-ticket-modal"><svg><use href="#icon-close"/></svg></button>
+      </div>
+      <div class="mini-modal-body">
+        <label class="field-label">Categoria</label>
+        <div class="category-grid" id="ticket-category-grid">
+          <button type="button" class="category-opt" data-cat="trem"><svg><use href="#icon-train"/></svg>Trem</button>
+          <button type="button" class="category-opt" data-cat="aviao"><svg><use href="#icon-plane"/></svg>Avião</button>
+          <button type="button" class="category-opt" data-cat="museu"><svg><use href="#icon-museum"/></svg>Museu</button>
+          <button type="button" class="category-opt" data-cat="atracao"><svg><use href="#icon-attraction"/></svg>Atração</button>
+          <button type="button" class="category-opt" data-cat="carro"><svg><use href="#icon-car"/></svg>Carro</button>
+          <button type="button" class="category-opt" data-cat="outros"><svg><use href="#icon-other"/></svg>Outros</button>
+        </div>
+
+        <label class="field-label">Título</label>
+        <input type="text" id="ticket-title" class="text-input" placeholder="Ex: Trem Roma → Florença">
+
+        <label class="field-label">Valor</label>
+        <div class="value-row">
+          <select id="ticket-currency" class="currency-select">
+            <option value="EUR">€</option>
+            <option value="BRL">R$</option>
+          </select>
+          <input type="number" id="ticket-value" class="text-input" placeholder="0,00" step="0.01" min="0">
+        </div>
+
+        <label class="field-label">Divisão do custo</label>
+        <div class="split-selector">
+          <button type="button" class="split-opt is-active" data-split="dividido">Dividido por 2</button>
+          <button type="button" class="split-opt" data-split="individual">Individual</button>
+        </div>
+        <div class="split-individual-row" id="split-individual-row" hidden>
+          <input type="number" id="ticket-value-tom" class="text-input" placeholder="Valor Tom" step="0.01" min="0">
+          <input type="number" id="ticket-value-guigo" class="text-input" placeholder="Valor Guigo" step="0.01" min="0">
+        </div>
+
+        <button class="btn-primary" id="btn-save-ticket">Salvar ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: NOVO LOCAL ============ -->
+  <div class="modal-overlay" id="place-modal-overlay" hidden>
+    <div class="mini-modal">
+      <div class="mini-modal-header">
+        <h3>Novo lugar</h3>
+        <button class="icon-btn" id="btn-close-place-modal"><svg><use href="#icon-close"/></svg></button>
+      </div>
+      <div class="mini-modal-body">
+        <label class="field-label">Nome do lugar</label>
+        <input type="text" id="place-name" class="text-input" placeholder="Ex: Trattoria da Nonna">
+
+        <label class="field-label">Notas</label>
+        <input type="text" id="place-notes" class="text-input" placeholder="O que não pode faltar">
+
+        <label class="field-label"><svg class="label-icon"><use href="#icon-map"/></svg> URL do Google Maps</label>
+        <input type="url" id="place-maps-url" class="text-input" placeholder="Cole o link do Google Maps">
+        <div id="place-maps-preview" class="maps-preview" hidden></div>
+
+        <label class="field-label"><svg class="label-icon"><use href="#icon-camera"/></svg> Imagem (foto / QR code / passagem)</label>
+        <label class="upload-zone" id="place-upload-zone">
+          <input type="file" id="place-image-input" accept="image/*" hidden>
+          <svg><use href="#icon-camera"/></svg>
+          <span>Toque para enviar uma imagem</span>
+        </label>
+        <div id="place-image-preview" class="image-preview" hidden></div>
+
+        <button class="btn-primary" id="btn-save-place">Salvar lugar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAINEL DE CONFIGURAÇÕES / EXPORT ============ -->
+  <div class="modal-overlay" id="settings-modal-overlay" hidden>
+    <div class="mini-modal">
+      <div class="mini-modal-header">
+        <h3>Configurações &amp; Backup</h3>
+        <button class="icon-btn" id="btn-close-settings-modal"><svg><use href="#icon-close"/></svg></button>
+      </div>
+      <div class="mini-modal-body">
+        <p class="settings-desc">Os dados ficam salvos no navegador (IndexedDB). Exporte periodicamente para não perder nada, ou importe um backup existente.</p>
+
+        <button class="btn-primary" id="btn-export-json">
+          <svg><use href="#icon-export"/></svg> Exportar backup (.json)
+        </button>
+
+        <label class="btn-secondary" id="btn-import-json-label">
+          <svg><use href="#icon-import"/></svg> Importar backup (.json)
+          <input type="file" id="import-json-input" accept="application/json" hidden>
+        </label>
+
+        <div class="settings-divider"></div>
+
+        <p class="settings-desc">
+          <strong>Sincronização em nuvem (opcional):</strong> esta app está pronta para sincronizar entre Tom e Guigo via Firebase ou Supabase (planos gratuitos). Preencha as credenciais em <code>db.js</code> (função <code>configureCloudSync</code>) e hospede em Vercel, Netlify ou GitHub Pages.
+        </p>
+        <span class="sync-status" id="sync-status">Nuvem: não configurada · funcionando 100% offline</span>
+
+        <div class="settings-divider"></div>
+        <button class="btn-danger" id="btn-reset-data">
+          <svg><use href="#icon-trash"/></svg> Apagar todos os dados
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TOAST ============ -->
+  <div class="toast" id="toast" hidden></div>
+
+</div>
+
+<script src="db.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
