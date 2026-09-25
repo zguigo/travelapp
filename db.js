@@ -1,13 +1,17 @@
 /* =========================================================================
-   db.js — Camada de persistência (IndexedDB + Supabase Cloud Sync)
+   db.js — Camada de persistência (IndexedDB)
    -------------------------------------------------------------------------
    Responsável por:
    1. Guardar o objeto inteiro da viagem (cidades, presença, tickets, etc)
-      em um object store simples de chave/valor no IndexedDB.
+      em um object store simples de chave/valor.
    2. Guardar as IMAGENS (fotos, QR codes, passagens) como Blobs em um
-      object store dedicado no IndexedDB.
-   3. Sincronizar o JSON da viagem com o Supabase para manter os dados 
-      sincronizados entre múltiplos dispositivos (ex: PC e Celular).
+      object store dedicado — assim não esbarramos no limite de ~5MB do
+      localStorage e conseguimos guardar fotos em alta qualidade offline.
+   3. Deixar prontos os "ganchos" de sincronização em nuvem (Firebase ou
+      Supabase, ambos com planos gratuitos) para quando a app for hospedada
+      em Vercel / Netlify / Render / GitHub Pages e usada por Tom e Guigo
+      em tempo real. Por padrão a sincronização fica DESLIGADA e tudo
+      funciona 100% offline com IndexedDB.
    ========================================================================= */
 
 const DB_NAME = 'tomguigo-italia-2026';
@@ -43,40 +47,19 @@ function openDatabase() {
 
 /* ---------------------------- Trip data (JSON) ---------------------------- */
 
-/** Salva o objeto completo da viagem localmente no IndexedDB e sincroniza na nuvem. */
+/** Salva o objeto completo da viagem no IndexedDB. */
 async function saveTripData(tripObject) {
   const db = await openDatabase();
-  
-  // 1. Salva localmente primeiro
-  await new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_TRIP, 'readwrite');
     tx.objectStore(STORE_TRIP).put({ key: 'trip', value: tripObject });
     tx.oncomplete = () => resolve(true);
     tx.onerror = () => reject(tx.error);
   });
-
-  // 2. Tenta enviar para o Supabase
-  await pushTripToCloud(tripObject);
-  return true;
 }
 
-/** Recupera o objeto completo da viagem (prioriza a nuvem se disponível). */
+/** Recupera o objeto completo da viagem (ou null se ainda não existir). */
 async function loadTripData() {
-  // 1. Busca da nuvem (Supabase)
-  const cloudData = await pullTripFromCloud();
-  if (cloudData) {
-    // Atualiza a cópia local do IndexedDB com os dados novos da nuvem
-    const db = await openDatabase();
-    await new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE_TRIP, 'readwrite');
-      tx.objectStore(STORE_TRIP).put({ key: 'trip', value: cloudData });
-      tx.oncomplete = () => resolve(true);
-      tx.onerror = () => reject(tx.error);
-    });
-    return cloudData;
-  }
-
-  // 2. Se a nuvem estiver indisponível ou offline, retorna a cópia do IndexedDB
   const db = await openDatabase();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_TRIP, 'readonly');
@@ -196,53 +179,63 @@ async function wipeDatabase() {
 }
 
 /* =========================================================================
-   SINCRONIZAÇÃO EM NUVEM (SUPABASE)
+   SINCRONIZAÇÃO EM NUVEM (opcional, desligada por padrão)
+   -------------------------------------------------------------------------
+   A ideia: Tom e Guigo hospedam a app de graça (Vercel / Netlify / Render /
+   GitHub Pages) e usam um banco em nuvem gratuito (Firebase Realtime
+   Database ou Supabase) só para o JSON da viagem (o objeto retornado por
+   loadTripData) — as imagens continuam locais em cada dispositivo via
+   IndexedDB, pois costumam pesar mais que o plano gratuito comporta.
+
+   Para ativar:
+   1. Crie um projeto gratuito no Firebase ou no Supabase.
+   2. Preencha CLOUD_CONFIG abaixo com as credenciais do projeto.
+   3. Descomente as chamadas de fetch dentro de pushTripToCloud /
+      pullTripFromCloud e adapte à API escolhida.
+   4. Chame configureCloudSync({ enabled: true }) — por exemplo a partir do
+      painel de Configurações da app.
    ========================================================================= */
 
-// Tenta obter de variáveis de ambiente do bundler se disponíveis
-const ENV_SUPABASE_URL = typeof process !== 'undefined' ? (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL) : (typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SUPABASE_URL : '');
-const ENV_SUPABASE_ANON_KEY = typeof process !== 'undefined' ? (process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) : (typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SUPABASE_ANON_KEY : '');
-
 const CLOUD_CONFIG = {
-  enabled: true,
-  provider: 'supabase',
-  // Cole a URL e a Anon Key do Supabase caso não use variáveis de ambiente na Vercel:
-  supabaseUrl: ENV_SUPABASE_URL || 'https://SUA_URL_AQUI.supabase.co',
-  supabaseAnonKey: ENV_SUPABASE_ANON_KEY || 'SUA_CHAVE_ANON_AQUI',
-  supabaseTable: 'trips'
+  enabled: false,          // true = tenta sincronizar em nuvem
+  provider: null,          // 'firebase' | 'supabase'
+  // Firebase Realtime Database: URL do projeto, ex. "https://SEU-PROJETO.firebaseio.com"
+  firebaseDatabaseUrl: '',
+  // Supabase: URL do projeto + chave anônima (pública) + tabela usada
+  supabaseUrl: '',
+  supabaseAnonKey: '',
+  supabaseTable: 'trip_data'
 };
 
 function configureCloudSync(options) {
   Object.assign(CLOUD_CONFIG, options);
 }
 
-/** Envia o JSON da viagem para o Supabase. */
+/** Envia o JSON da viagem para a nuvem (no-op enquanto CLOUD_CONFIG.enabled = false). */
 async function pushTripToCloud(tripObject) {
-  if (!CLOUD_CONFIG.enabled || !CLOUD_CONFIG.supabaseUrl || CLOUD_CONFIG.supabaseUrl.includes('SUA_URL_AQUI')) {
-    return { skipped: true };
-  }
+  if (!CLOUD_CONFIG.enabled) return { skipped: true };
 
   try {
-    const response = await fetch(`${CLOUD_CONFIG.supabaseUrl}/rest/v1/${CLOUD_CONFIG.supabaseTable}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': CLOUD_CONFIG.supabaseAnonKey,
-        'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`,
-        'Prefer': 'resolution=merge-duplicates'
-      },
-      body: JSON.stringify({
-        id: 'trip',
-        data: tripObject,
-        updated_at: new Date().toISOString()
-      })
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Erro Supabase (${response.status}): ${errText}`);
+    if (CLOUD_CONFIG.provider === 'firebase' && CLOUD_CONFIG.firebaseDatabaseUrl) {
+      // Exemplo de chamada REST do Firebase Realtime Database:
+      // await fetch(`${CLOUD_CONFIG.firebaseDatabaseUrl}/trip.json`, {
+      //   method: 'PUT',
+      //   body: JSON.stringify(tripObject)
+      // });
     }
-
+    if (CLOUD_CONFIG.provider === 'supabase' && CLOUD_CONFIG.supabaseUrl) {
+      // Exemplo de chamada REST do Supabase:
+      // await fetch(`${CLOUD_CONFIG.supabaseUrl}/rest/v1/${CLOUD_CONFIG.supabaseTable}`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'apikey': CLOUD_CONFIG.supabaseAnonKey,
+      //     'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`,
+      //     'Prefer': 'resolution=merge-duplicates'
+      //   },
+      //   body: JSON.stringify({ id: 'trip', data: tripObject })
+      // });
+    }
     return { ok: true };
   } catch (err) {
     console.warn('Falha ao sincronizar com a nuvem:', err);
@@ -250,28 +243,11 @@ async function pushTripToCloud(tripObject) {
   }
 }
 
-/** Busca o JSON da viagem no Supabase. */
+/** Busca o JSON da viagem na nuvem (no-op enquanto CLOUD_CONFIG.enabled = false). */
 async function pullTripFromCloud() {
-  if (!CLOUD_CONFIG.enabled || !CLOUD_CONFIG.supabaseUrl || CLOUD_CONFIG.supabaseUrl.includes('SUA_URL_AQUI')) {
-    return null;
-  }
-
+  if (!CLOUD_CONFIG.enabled) return null;
   try {
-    const response = await fetch(`${CLOUD_CONFIG.supabaseUrl}/rest/v1/${CLOUD_CONFIG.supabaseTable}?id=eq.trip&select=data`, {
-      method: 'GET',
-      headers: {
-        'apikey': CLOUD_CONFIG.supabaseAnonKey,
-        'Authorization': `Bearer ${CLOUD_CONFIG.supabaseAnonKey}`
-      }
-    });
-
-    if (!response.ok) return null;
-
-    const result = await response.json();
-    if (Array.isArray(result) && result.length > 0) {
-      return result[0].data;
-    }
-
+    // Implementar de acordo com o provedor escolhido, espelhando pushTripToCloud.
     return null;
   } catch (err) {
     console.warn('Falha ao buscar dados da nuvem:', err);
@@ -279,7 +255,8 @@ async function pullTripFromCloud() {
   }
 }
 
-/* Exposto globalmente para uso em app.js */
+/* Exposto globalmente para uso em app.js (sem módulos ES para manter
+   compatibilidade simples de "abrir e rodar" direto do arquivo). */
 window.TripDB = {
   saveTripData,
   loadTripData,
