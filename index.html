@@ -31,9 +31,25 @@
   <symbol id="icon-import" viewBox="0 0 24 24"><path d="M12 14V3M8 7l4-4 4 4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
   <symbol id="icon-link" viewBox="0 0 24 24"><path d="M9.5 14.5 14.5 9.5M8 16l-2.5 2.5a3 3 0 0 1-4.2-4.2L4 11.5M16 8l2.5-2.5a3 3 0 0 1 4.2 4.2L20 12.5"/></symbol>
   <symbol id="icon-food" viewBox="0 0 24 24"><path d="M6 2v8a2 2 0 0 0 4 0V2M6 2v20M10 2v6M17 2c-2 1-2.5 3-2.5 5.5S16 12 16 12v10"/></symbol>
+  <symbol id="icon-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
 </svg>
 
-<div class="app">
+<!-- ============ TELA DE LOGIN (Firebase Authentication) ============ -->
+<div class="auth-gate" id="auth-gate">
+  <div class="auth-card">
+    <span class="brand-mark">TG</span>
+    <h1 class="auth-title">Itália &amp; Europa</h1>
+    <p class="hint">Entre com o e-mail e a senha combinados entre vocês dois.</p>
+    <form id="auth-form" class="auth-form">
+      <input type="email" id="auth-email" class="text-input" placeholder="E-mail" required autocomplete="username">
+      <input type="password" id="auth-password" class="text-input" placeholder="Senha" required autocomplete="current-password">
+      <p class="auth-error" id="auth-error"></p>
+      <button type="submit" class="btn-primary" id="auth-submit">Entrar</button>
+    </form>
+  </div>
+</div>
+
+<div class="app" hidden>
 
   <!-- ============ HEADER ============ -->
   <header class="app-header">
@@ -266,7 +282,8 @@
         <button class="icon-btn" id="btn-close-settings-modal"><svg><use href="#icon-close"/></svg></button>
       </div>
       <div class="mini-modal-body">
-        <p class="settings-desc">Os dados ficam salvos no navegador (IndexedDB). Exporte periodicamente para não perder nada, ou importe um backup existente.</p>
+        <p class="settings-desc">Os dados e as imagens ficam salvos no Firebase e sincronizados automaticamente entre Tom e Guigo, em tempo real. Exporte periodicamente um backup local por segurança.</p>
+        <span class="sync-status">Conectado como <strong id="sync-user-email">—</strong></span>
 
         <button class="btn-primary" id="btn-export-json">
           <svg><use href="#icon-export"/></svg> Exportar backup (.json)
@@ -278,11 +295,9 @@
         </label>
 
         <div class="settings-divider"></div>
-
-        <p class="settings-desc">
-          <strong>Sincronização em nuvem (opcional):</strong> esta app está pronta para sincronizar entre Tom e Guigo via Firebase ou Supabase (planos gratuitos). Preencha as credenciais em <code>db.js</code> (função <code>configureCloudSync</code>) e hospede em Vercel, Netlify ou GitHub Pages.
-        </p>
-        <span class="sync-status" id="sync-status">Nuvem: não configurada · funcionando 100% offline</span>
+        <button class="btn-secondary" id="btn-logout-settings">
+          <svg><use href="#icon-logout"/></svg> Sair da conta
+        </button>
 
         <div class="settings-divider"></div>
         <button class="btn-danger" id="btn-reset-data">
@@ -297,6 +312,13 @@
 
 </div>
 
+<!-- Firebase (hospedagem: use as versões "compat" para manter o código simples) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
 <script src="db.js"></script>
 <script src="app.js"></script>
 </body>

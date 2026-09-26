@@ -61,7 +61,22 @@ function showToast(message) {
 
 async function persist() {
   await window.TripDB.saveTripData(trip);
-  window.TripDB.pushTripToCloud(trip); // no-op enquanto a nuvem estiver desligada
+}
+
+/** Chamado sempre que o Firestore avisa que a viagem mudou em outro
+ *  dispositivo (Tom ou Guigo editando ao mesmo tempo em lugares
+ *  diferentes). Atualiza as listas e o resumo; se houver um modal de dia
+ *  aberto, atualiza só os tickets/lugares dele para não atrapalhar quem
+ *  estiver digitando em um campo de texto naquele momento. */
+function handleRemoteTripUpdate(newTrip) {
+  trip = newTrip;
+  renderCalendar();
+  renderList();
+  if (currentView === 'summary') renderSummary();
+  if (currentDayIndex !== null && trip.days[currentDayIndex]) {
+    renderTicketWallet();
+    renderPlaceList();
+  }
 }
 
 /* --------------------------- Inicialização da viagem --------------------------- */
@@ -647,6 +662,10 @@ function bindSettings() {
 
   document.querySelector('[data-nav-settings]').addEventListener('click', () => overlay.hidden = false);
 
+  document.getElementById('btn-logout-settings').addEventListener('click', () => {
+    window.TripAuth.signOut();
+  });
+
   document.getElementById('btn-export-json').addEventListener('click', async () => {
     const images = await window.TripDB.exportAllImages();
     const backup = {
@@ -736,7 +755,10 @@ async function boot() {
   bindPlaceModal();
   bindSettings();
 
+  window.TripDB.onTripChange(handleRemoteTripUpdate);
+
   switchView('calendar');
 }
 
-document.addEventListener('DOMContentLoaded', boot);
+// A app só começa depois que a pessoa faz login (ver auth.js).
+window.TripAuth.onReady(boot);
